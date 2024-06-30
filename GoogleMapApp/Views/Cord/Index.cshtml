@@ -1,0 +1,68 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+
+<!-- Reference to the Bing Maps SDK -->
+<script type='text/javascript'
+        src='https://www.bing.com/api/maps/mapcontrol?callback=GetMap&key=[AiGUquuoW6rUQ2iZ-z3AHeiQV1FUSA0rRQCvpJFHLbfZxjPusTLghKGNZTqk1JS5]'
+        async defer>
+</script>
+
+<div id="myMap" style='position:relative;width:600px;height:400px;' onload="GetMap();"></div>
+<div id="mapDblClick">dblclick</div>
+ 
+@* var map = new Microsoft.Maps.Map('#myMap'); *@
+<script type='text/javascript'>
+    function GetMap() {
+
+        //You can customize the map as you load it.
+        // Use the following code to update how the map is loaded in the GetMap function such that it sets the type to aerial,
+        // the zoom level to 10, and the map center over London, UK (51.50632, -0.12714).
+        var map = new Microsoft.Maps.Map('#myMap', {
+            credentials: 'AiGUquuoW6rUQ2iZ-z3AHeiQV1FUSA0rRQCvpJFHLbfZxjPusTLghKGNZTqk1JS5',
+            center: new Microsoft.Maps.Location(51.50632, -0.12714),
+            mapTypeId: Microsoft.Maps.MapTypeId.aerial,
+            zoom: 10
+        });
+
+
+        //Add mouse events to the map.
+        Microsoft.Maps.Events.addHandler(map, 'dblclick', function () { highlight('mapDblClick'); });
+        
+        function highlight(id) {
+            //Highlight the div to indicate that the event has fired.
+            document.getElementById(id).style.background = 'LightGreen';
+
+            //Remove the highlighting after a second.
+            setTimeout(function () { document.getElementById(id).style.background = 'white'; }, 1000);
+        }
+
+        //Pushpins, sometimes known as MapIcons or Markers,
+        // are the primary method in the Bing Maps V8 Map Control to add a graphical image and text at a location within the map.
+        //Create custom Pushpin
+        // هنا يمكننا وضع الاحداثيات بدل سينتر لتثبيت ماركر
+        var center = map.getCenter();
+        var pin = new Microsoft.Maps.Pushpin(center, {
+
+            color: 'red',
+            title: 'Microsoft',
+            subTitle: 'City Center',
+            text: '1'
+        });
+        //Add mouse events to the pushpin.
+        Microsoft.Maps.Events.addHandler(pushpin, 'click', function () { highlight('pushpinClick'); });
+        Microsoft.Maps.Events.addHandler(pushpin, 'mousedown', function () { highlight('pushpinMousedown'); });
+        //Add the pushpin to the map
+        map.entities.push(pin);
+
+       
+
+        
+
+    }
+
+
+</script>
