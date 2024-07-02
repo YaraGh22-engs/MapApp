@@ -1,0 +1,33 @@
+﻿@model IEnumerable<Store>
+
+
+@* 1) include the map script *@
+
+<script src="~/lib/leaflet/leaflet.js"></script>
+<script src="~/lib/leaflet/leaflet.min.js"></script> 
+
+@* 2) build the map *@
+
+<div id="map" style="width:100%;height:400px"></div>
+<script>
+    var map = L.map('map').setView([32.0213,35.0],8) // 8 is zome
+    // draw the map
+   // 3) Adding leaflet map as client library into our project.
+
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    // 4) Converting the C# Model to JS model  
+    // convsert the data base table to Array in json type
+    var jsModel = @Html.Raw(Json.Serialize(Model))
+
+    // 5) Add Marker for each Store (for each elemnt in jsModel Array)
+        for (i in jsModel) 
+        {
+            item = jsModel[i]
+            L.marker([item.longitude, item.latitude]).addTo(map)
+            .bindPopup(item.name +'<br>' + item.address)
+            .openPopup();
+        }
+</script>

@@ -1,4 +1,4 @@
-﻿@model IEnumerable<GoogleMapApp.Models.Store>
+﻿@model IEnumerable<Store>
 
 @{
     ViewData["Title"] = "Index";
@@ -61,10 +61,10 @@
  
 <div id="myMap" style='position:relative;width:600px;height:400px;' onload="GetMap();"></div>
 <div id="mapDblClick">dblclick</div>
+<div id="tycord"> </div>
 <div id="output"></div>
-<div id='searchBoxContainer'>
-    <input type='text' id='searchBox' />
-</div>
+
+
 
 @* var map = new Microsoft.Maps.Map('#myMap'); *@
 <script type='text/javascript'>
@@ -79,22 +79,7 @@
             center: new Microsoft.Maps.Location(51.50632, -0.12714),
             mapTypeId: Microsoft.Maps.MapTypeId.aerial,
             zoom: 10
-        });
-
-
-        //Add mouse events to the map.
-        Microsoft.Maps.Events.addHandler(map, 'dblclick', function () { highlight('mapDblClick'); });
-
-        function highlight(id) 
-        {
-            //Highlight the div to indicate that the event has fired.
-            document.getElementById(id).style.background = 'LightGreen';
-
-            //Remove the highlighting after a second.
-            setTimeout(function () { document.getElementById(id).style.background = 'white'; }, 1000);
-        }
-
-
+        });  
         //////////////////Pushpins, sometimes known as MapIcons or Markers,
         // are the primary method in the Bing Maps V8 Map Control to add a graphical image and text at a location within the map.
         //Create custom Pushpin
@@ -106,8 +91,7 @@
             title: 'Microsoft',
             subTitle: 'City Center',
             text: '1'
-        }); 
-        
+        });  
         //Add the pushpin to the map
         map.entities.push(pin);
 
@@ -117,36 +101,69 @@
         var infobox = new Microsoft.Maps.Infobox(myloc, {
             title: 'Map Center',
             description: 'Seattle'
-        });
-
+        }); 
         //Assign the infobox to a map instance.
-        infobox.setMap(map);
-
+        infobox.setMap(map); 
 
         ///////////////////////This example shows how to request the user’s location and then display it on the map using a pushpin.
-
         //Load the spatial math module
+        //تظهر موقع المستخدم الحالي
         Microsoft.Maps.loadModule("Microsoft.Maps.SpatialMath", function () {
             //Request the user's location
             navigator.geolocation.getCurrentPosition(function (position) {
                 var loc = new Microsoft.Maps.Location(position.coords.latitude, position.coords.longitude);
-
                 //Create an accuracy circle
                 var path = Microsoft.Maps.SpatialMath.getRegularPolygon(loc, position.coords.accuracy, 36, Microsoft.Maps.SpatialMath.Meters);
                 var poly = new Microsoft.Maps.Polygon(path);
-                map.entities.push(poly);
-
+                map.entities.push(poly); 
                 //Add a pushpin at the user's location.
-                var pin = new Microsoft.Maps.Pushpin(loc);
+                var pin = new Microsoft.Maps.Pushpin(loc, {
+                    color: 'green',
+                    title: 'You Are Here',
+                });
                 map.entities.push(pin);
-
-                //Center the map on the user's location.
-                // map.setView({ center: loc, zoom: 10 });
+                 
             });
         });
+        ///////////////Converting the C# Model to JS model
+        // convsert the data base table to Array in json type
+        var homes = @Html.Raw(Json.Serialize(Model))
+        //  تصبح المصفوفة بالشكل التالي
+        // var homes = [
+        //     { name: 'منزل 1', latitude: 47.6062, longitude: -122.3321 },
+        //     { name: 'منزل 2', latitude: 48.6097, longitude: -127.3331 }
+           
+        // ];
+            homes.forEach(function (h) {
+                var location = new Microsoft.Maps.Location(h.latitude, h.longitude);
+                var pin = new Microsoft.Maps.Pushpin(location,{ 
+                      color: 'red',
+                      title: h.name,
+                      subTitle: h.address,
+                      text: '1'
+                   });
+                map.entities.push(pin);
+            });
+        // التقاط احداثيات عند النقر 
+        //
+        Microsoft.Maps.Events.addHandler(map, 'click', function (e) {
+             
+            var location = e.location;
+            var lat = location.latitude;
+            var long = location.longitude;
+            // print in div and in console
+            document.getElementById('tycord').textContent = 'الإحداثيات: ' + lat + ', ' + long;
+            console.log('الإحداثيات: ' + location.latitude + ', ' + location.longitude);
+            console.log(lat, long);
+            // يمكنك استخدام الإحداثيات كما ترغب (مثلاً إضافتها إلى قاعدة البيانات أو عرضها للمستخدم).
+        });
+         
+        
+
+
     
     } // end of Getmap()
 
-    
+   
     
 </script>

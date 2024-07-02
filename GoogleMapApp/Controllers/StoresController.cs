@@ -153,5 +153,27 @@ namespace GoogleMapApp.Controllers
         {
             return _context.stores.Any(e => e.Id == id);
         }
+
+        [HttpPost]
+        // في كود الكنترولر (StoreController.cs) أو حسب تسمية الكنترولر الخاص بك:
+        public IActionResult SaveCoordinates(double latcord, double longcord,string addr, string name)
+        {
+            // قم بإنشاء كائن من نموذج المنازل واملأه بالإحداثيات وأي حقول أخرى.
+            var st = new Store
+            {
+                longitude = longcord,
+                latitude = latcord,
+                Address = addr,
+                Name = name,
+                // ... إضافة المزيد من الحقول هنا
+            };
+
+            // قم بإضافة الكائن إلى قاعدة البيانات (استخدم Entity Framework أو ADO.NET).
+            _context.stores.Add(st);
+            _context.SaveChanges();
+
+            return RedirectToAction("Index"); // أعد توجيه المستخدم إلى صفحة العرض.
+        }
+
     }
 }
